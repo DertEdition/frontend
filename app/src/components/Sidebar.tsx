@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
             </Box>
           </Box>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            HealthHub
+            ÇARE
           </Typography>
         </Box>
       </Box>
@@ -124,13 +124,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
           );
         })}
       </List>
-
-      <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-          © 2024 HealthHub
-        </Typography>
-      </Box>
     </Drawer>
   );
 };
