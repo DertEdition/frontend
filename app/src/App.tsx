@@ -1,34 +1,44 @@
-import React, { useState } from 'react';
-import { Box } from '@mui/material';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import MainContent from './components/MainContent';
+import Box from "@mui/material/Box";
+import { Sidebar } from './components/Sidebar';
+import { ChatPanel } from './components/ChatPanel';
+import { Dashboard } from './components/Dashboard';
+import { MedicationTracking } from './components/MedicationTracking';
+import { useState } from "react";
+import { Typography } from '@mui/material';
 
-function App() {
-  const [selectedItem, setSelectedItem] = useState('Ana Sayfa');
+type ViewType = 'dashboard' | 'bodymap' | 'blood' | 'mri' | 'medication' | 'chat';
 
-  const menuItems = [
-    'Ana Sayfa',
-    'BMI Hesaplama',
-    'Kan Tahlili',
-    'İlaç Planlayıcı',
-    'ChatBot',
-  ];
+function App() {  
+
+  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+
+  const renderView = () => {
+    switch (activeView) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'chat':
+        return <ChatPanel />;
+      case 'bodymap':
+        return <Typography variant="h4">Body Map - Yakında...</Typography>;
+      case 'blood':
+        return <Typography variant="h4">Kan Testleri - Yakında...</Typography>;
+      case 'mri':
+        return <Typography variant="h4">MRI Sonuçları - Yakında...</Typography>;
+      case 'medication':
+        return <MedicationTracking />;
+      default:
+        return <Dashboard />;
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <Header />
-      <Sidebar
-        menuItems={menuItems}
-        selectedItem={selectedItem}
-        onSelectItem={setSelectedItem}
-      />
-      <MainContent 
-        selectedItem={selectedItem}
-        onMenuChange={setSelectedItem}
-      />
+      <Sidebar activeView={activeView} onViewChange={(view) => setActiveView(view as ViewType)} />
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        {renderView()}
+      </Box>
     </Box>
-  );
+  )
 }
 
-export default App;
+export default App
