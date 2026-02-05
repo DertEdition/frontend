@@ -8,13 +8,11 @@ import {
   ListItemText,
   Box,
   Typography,
-  Divider
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Accessibility,
   Biotech,
-  MedicalServices,
   Medication,
   Chat
 } from '@mui/icons-material';
@@ -34,7 +32,6 @@ const menuItems: MenuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
   { id: 'bodymap', label: 'Body Map', icon: Accessibility },
   { id: 'blood', label: 'Blood Tests', icon: Biotech },
-  { id: 'mri', label: 'MRI Results', icon: MedicalServices },
   { id: 'medication', label: 'Medication Tracking', icon: Medication },
   { id: 'chat', label: 'AI Health Chat', icon: Chat },
 ];

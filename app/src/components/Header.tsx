@@ -7,14 +7,34 @@ import {
   IconButton,
   Badge,
   Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   Notifications,
   Settings,
   Person,
+  Logout,
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 export const Header: React.FC = () => {
+  const { user, logout } = useAuth();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    logout();
+  };
+
   return (
     <AppBar
       position="static"
@@ -29,10 +49,10 @@ export const Header: React.FC = () => {
       <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
-            Welcome back, Sarah
+            Hoş geldiniz, {user?.firstName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Here's your health overview for today
+            Bugünkü sağlık özeti
           </Typography>
         </Box>
 
@@ -65,14 +85,16 @@ export const Header: React.FC = () => {
               pl: 2,
               borderLeft: '1px solid',
               borderColor: 'divider',
+              cursor: 'pointer',
             }}
+            onClick={handleMenu}
           >
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                Sarah Johnson
+                {user?.firstName} {user?.lastName}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Patient ID: #12345
+                {user?.email}
               </Typography>
             </Box>
             <Avatar
@@ -85,6 +107,24 @@ export const Header: React.FC = () => {
               <Person />
             </Avatar>
           </Box>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem onClick={handleLogout}>
+              <Logout sx={{ mr: 1 }} fontSize="small" />
+              Çıkış Yap
+            </MenuItem>
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>

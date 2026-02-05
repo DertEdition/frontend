@@ -8,7 +8,6 @@ export function Dashboard() {
 
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          {/* BMI Card */}
           <Box sx={{ flex: { xs: '1 1 100%', lg: '1 1 calc(33.333% - 16px)' } }}>
             <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
               <CardContent>

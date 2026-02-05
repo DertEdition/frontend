@@ -2,15 +2,24 @@ import Box from "@mui/material/Box";
 import { Sidebar } from './components/Sidebar';
 import { ChatPanel } from './components/ChatPanel';
 import { Dashboard } from './components/Dashboard';
-import { MedicationTracking } from './components/MedicationTracking';
+import { MedicationTracking } from './components/MedicationTracking';import { BodyMap } from './components/BodyMap';import { Login } from './components/auth/Login';
+import { Register } from './components/auth/Register';
 import { useState } from "react";
 import { Typography } from '@mui/material';
+import { useAuth } from './context/AuthContext';
 
-type ViewType = 'dashboard' | 'bodymap' | 'blood' | 'mri' | 'medication' | 'chat';
+type ViewType = 'dashboard' | 'bodymap' | 'blood' | 'medication' | 'chat';
 
 function App() {  
-
+  const { isAuthenticated } = useAuth();
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [showRegister, setShowRegister] = useState(false);
+
+  if (!isAuthenticated) {
+    return showRegister 
+      ? <Register onSwitchToLogin={() => setShowRegister(false)} />
+      : <Login onSwitchToRegister={() => setShowRegister(true)} />;
+  }
 
   const renderView = () => {
     switch (activeView) {
@@ -19,11 +28,9 @@ function App() {
       case 'chat':
         return <ChatPanel />;
       case 'bodymap':
-        return <Typography variant="h4">Body Map - Yakında...</Typography>;
+        return <BodyMap onNavigateToChat={() => setActiveView('chat')} />;
       case 'blood':
         return <Typography variant="h4">Kan Testleri - Yakında...</Typography>;
-      case 'mri':
-        return <Typography variant="h4">MRI Sonuçları - Yakında...</Typography>;
       case 'medication':
         return <MedicationTracking />;
       default:
@@ -32,9 +39,9 @@ function App() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Sidebar activeView={activeView} onViewChange={(view) => setActiveView(view as ViewType)} />
-      <Box component="main" sx={{ flexGrow: 1 }}>
+      <Box component="main" sx={{ flexGrow: 1, overflow: 'auto'}}>
         {renderView()}
       </Box>
     </Box>
