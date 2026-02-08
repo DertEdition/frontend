@@ -39,10 +39,12 @@ function App() {
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <Sidebar activeView={activeView} onViewChange={(view) => setActiveView(view as ViewType)} />
-      <Box component="main" sx={{ flexGrow: 1, overflow: 'auto'}}>
-        {renderView()}
+    <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', bgcolor: '#e5e7eb' }}>
+      <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', maxWidth: 1440, width: '100%', bgcolor: 'white' }}>
+        <Sidebar activeView={activeView} onViewChange={(view) => setActiveView(view as ViewType)} />
+        <Box component="main" sx={{ flexGrow: 1, overflow: 'auto'}}>
+          {renderView()}
+        </Box>
       </Box>
     </Box>
   )

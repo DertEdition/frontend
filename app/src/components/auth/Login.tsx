@@ -51,7 +51,10 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
         return;
       }
 
+      console.log('Login response:', data);
+      console.log('Token:', data.token);
       login(data.token, data.user);
+      console.log('Token saved to localStorage:', localStorage.getItem('token'));
     } catch (err) {
       setError('Bağlantı hatası. Lütfen tekrar deneyin.');
     } finally {

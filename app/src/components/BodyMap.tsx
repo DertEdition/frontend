@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Typography, Button, Paper, IconButton } from '@mui/material';
-import { Close, Person, Image, Psychology, CloudUpload } from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Button, Paper, IconButton, CircularProgress, Dialog, DialogContent, Radio } from '@mui/material';
+import { Close, Person, Image, Psychology, CloudUpload, PictureAsPdf, ZoomIn } from '@mui/icons-material';
 import { Header } from './Header';
+import { uploadMRIImage, getMRIImages } from '../rest/restOperations';
 
 type BodyPart = 'head' | 'chest' | 'abdomen' | 'left-arm' | 'right-arm' | 'left-leg' | 'right-leg';
 
@@ -70,22 +71,90 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
     'left-leg': [],
     'right-leg': []
   });
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageForAI, setSelectedImageForAI] = useState<string | null>(null);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageClick = (url: string) => {
+    setSelectedImage(url);
+    setViewerOpen(true);
+  };
+
+  const handleAIAnalysisClick = () => {
+    if (selectedImageForAI) {
+      // AI analiz fonksiyonu buraya gelecek
+      console.log('AI analiz için seçilen görüntü:', selectedImageForAI);
+      handleAIAnalysis(selectedImageForAI);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedPart || !event.target.files || !event.target.files[0]) return;
     
     const file = event.target.files[0];
-    const url = URL.createObjectURL(file);
-    const newImage: MRIImage = {
-      url,
-      date: new Date().toLocaleDateString('tr-TR')
-    };
+    setUploading(true);
     
-    setMriData(prev => ({
-      ...prev,
-      [selectedPart]: [...prev[selectedPart], newImage]
-    }));
+    try {
+      const response = await uploadMRIImage({
+        file,
+        bodyPart: selectedPart
+      });
+      
+      const newImage: MRIImage = {
+        url: response.fileUrl,
+        date: new Date().toLocaleDateString('tr-TR')
+      };
+      
+      setMriData(prev => ({
+        ...prev,
+        [selectedPart]: [...prev[selectedPart], newImage]
+      }));
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
   };
+
+  // Sayfa yüklendiğinde mevcut MR görüntülerini getir
+  useEffect(() => {
+    const fetchMRIImages = async () => {
+      setLoading(true);
+      try {
+        const images = await getMRIImages();
+        // Backend'den gelen görüntüleri vücut bölgelerine göre grupla
+        const groupedImages: Record<BodyPart, MRIImage[]> = {
+          'head': [],
+          'chest': [],
+          'abdomen': [],
+          'left-arm': [],
+          'right-arm': [],
+          'left-leg': [],
+          'right-leg': []
+        };
+        
+        images.forEach((img: any) => {
+          if (img.bodyPart in groupedImages) {
+            groupedImages[img.bodyPart as BodyPart].push({
+              url: img.fileUrl,
+              date: new Date(img.uploadDate).toLocaleDateString('tr-TR')
+            });
+          }
+        });
+        
+        setMriData(groupedImages);
+      } catch (err) {
+        console.error('Error fetching MRI images:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMRIImages();
+  }, []);
 
   const handleAIAnalysis = (imageUrl: string) => {
     // Burada seçilen görüntüyü chat'e gönderebilirsiniz
@@ -106,19 +175,19 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
     <Box sx={{ flex: 1, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       <Header />
       
-      <Box component="main" sx={{ p: 4 }}>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
-            İnteraktif Vücut Haritası
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            MR görüntülerini görmek için vücut bölgesine tıklayın
-          </Typography>
-        </Box>
-
+      <Box component="main" sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', gap: 3 }}>
           {/* Body Map SVG */}
-          <Paper sx={{ flex: 1, p: 4, bgcolor: '#fafafa' }}>
+          <Paper 
+            elevation={3}
+            sx={{ 
+              flex: 1, 
+              p: 4, 
+              bgcolor: 'white',
+              border: '1px solid #e0e0e0',
+              borderRadius: 2
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               <svg viewBox="0 0 300 650" style={{ width: '100%', maxWidth: '350px' }}>
                 <defs>
@@ -277,10 +346,19 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
 
           {/* MRI Images Panel */}
           {selectedPart ? (
-            <Paper sx={{ width: 400, p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', mb: 3 }}>
+            <Paper 
+              elevation={3}
+              sx={{ 
+                width: 380, 
+                p: 2.5,
+                border: '1px solid #e0e0e0',
+                borderRadius: 2,
+                bgcolor: 'white'
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', mb: 2 }}>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
                     {bodyPartsData[selectedPart].title}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -292,102 +370,254 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
                 </IconButton>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 2 }}>
-                  MR Görüntüleri
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1.5, color: 'text.secondary' }}>
+                  MR Görüntüleri ({mriData[selectedPart].length})
                 </Typography>
                 
                 {mriData[selectedPart].length > 0 ? (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {mriData[selectedPart].map((img, index) => (
-                      <Box key={index}>
-                        <Box
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: '440px', overflowY: 'auto', pr: 0.5 }}>
+                    {mriData[selectedPart].map((img, index) => {
+                      const isPDF = img.url.toLowerCase().endsWith('.pdf');
+                      const filename = img.url.split('/').pop() || `MR-${index + 1}`;
+                      return (
+                      <Paper 
+                        key={index}
+                        onClick={() => setSelectedImageForAI(img.url)}
+                        elevation={selectedImageForAI === img.url ? 2 : 0}
+                        sx={{ 
+                          p: 1, 
+                          display: 'flex', 
+                          gap: 1.5, 
+                          alignItems: 'center',
+                          transition: 'all 0.2s',
+                          cursor: 'pointer',
+                          bgcolor: selectedImageForAI === img.url ? '#f0f7ff' : '#fafafa',
+                          border: selectedImageForAI === img.url ? '2px solid #3b82f6' : '2px solid transparent',
+                          borderRadius: 1.5,
+                          '&:hover': {
+                            bgcolor: selectedImageForAI === img.url ? '#f0f7ff' : '#f5f5f5',
+                            elevation: 1
+                          }
+                        }}
+                      >
+                        {/* Radio Button */}
+                        <Radio
+                          checked={selectedImageForAI === img.url}
+                          onChange={() => setSelectedImageForAI(img.url)}
+                          size="small"
                           sx={{
-                            aspectRatio: '16/9',
-                            bgcolor: '#f5f5f5',
-                            borderRadius: 2,
+                            color: '#3b82f6',
+                            p: 0.5,
+                            '&.Mui-checked': {
+                              color: '#3b82f6',
+                            },
+                          }}
+                        />
+
+                        {/* Thumbnail */}
+                        <Box
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            !isPDF && handleImageClick(img.url);
+                          }}
+                          sx={{
+                            width: 60,
+                            height: 60,
+                            bgcolor: '#fff',
+                            borderRadius: 1,
                             overflow: 'hidden',
-                            mb: 1
+                            flexShrink: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: isPDF ? 'default' : 'pointer',
+                            position: 'relative',
+                            border: '1px solid #e0e0e0',
+                            '&:hover': !isPDF ? {
+                              '& .zoom-overlay': {
+                                opacity: 1
+                              }
+                            } : {}
                           }}
                         >
-                          <img src={img.url} alt={`MR ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {isPDF ? (
+                            <PictureAsPdf sx={{ fontSize: 32, color: '#ef4444' }} />
+                          ) : (
+                            <>
+                              <img 
+                                src={img.url} 
+                                alt={`MR ${index + 1}`} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                              />
+                              <Box
+                                className="zoom-overlay"
+                                sx={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  bgcolor: 'rgba(0,0,0,0.5)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  opacity: 0,
+                                  transition: 'opacity 0.2s'
+                                }}
+                              >
+                                <ZoomIn sx={{ color: 'white', fontSize: 24 }} />
+                              </Box>
+                            </>
+                          )}
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Yüklenme: {img.date}
+
+                        {/* Info */}
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                            MR #{index + 1}
                           </Typography>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<Psychology />}
-                            onClick={() => handleAIAnalysis(img.url)}
-                            sx={{
-                              textTransform: 'none',
-                              borderColor: '#3b82f6',
-                              color: '#3b82f6',
-                              '&:hover': {
-                                borderColor: '#2563eb',
-                                bgcolor: 'rgba(59, 130, 246, 0.04)'
-                              }
-                            }}
-                          >
-                            AI'a Yorumlat
-                          </Button>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                            {img.date}
+                          </Typography>
                         </Box>
-                      </Box>
-                    ))}
+                      </Paper>
+                    )})}
                   </Box>
                 ) : (
                   <Box
                     sx={{
-                      bgcolor: '#f5f5f5',
-                      borderRadius: 2,
-                      p: 4,
+                      bgcolor: '#fafafa',
+                      borderRadius: 1.5,
+                      p: 3,
                       textAlign: 'center',
                       border: '2px dashed #e0e0e0'
                     }}
                   >
-                    <Image sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-                    <Typography variant="body2" color="text.secondary">
+                    <Image sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                       Bu bölge için MR görüntüsü yüklenmemiş
                     </Typography>
                   </Box>
                 )}
               </Box>
 
+              {/* AI Analiz Butonu */}
+              {mriData[selectedPart].length > 0 && (
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<Psychology />}
+                  onClick={handleAIAnalysisClick}
+                  disabled={!selectedImageForAI}
+                  sx={{
+                    bgcolor: '#3b82f6',
+                    '&:hover': { bgcolor: '#2563eb' },
+                    '&:disabled': { bgcolor: '#93c5fd' },
+                    textTransform: 'none',
+                    py: 1.2,
+                    mb: 1.5,
+                    fontWeight: 500
+                  }}
+                >
+                  AI ile Analiz Et
+                </Button>
+              )}
+
               <Button
                 fullWidth
                 variant="contained"
                 component="label"
-                startIcon={<CloudUpload />}
+                startIcon={uploading ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <CloudUpload />}
+                disabled={uploading}
                 sx={{
-                  bgcolor: '#3b82f6',
-                  '&:hover': { bgcolor: '#2563eb' },
+                  bgcolor: '#14b8a6',
+                  '&:hover': { bgcolor: '#0d9488' },
+                  '&:disabled': { bgcolor: '#5eead4' },
                   textTransform: 'none',
-                  py: 1.5
+                  py: 1.2,
+                  fontWeight: 500
                 }}
               >
-                Görüntü Yükle
+                {uploading ? 'Yükleniyor...' : 'Görüntü Yükle'}
                 <input
                   type="file"
                   hidden
-                  accept="image/*"
+                  accept="image/*,application/pdf"
                   onChange={handleFileUpload}
+                  disabled={uploading}
                 />
               </Button>
             </Paper>
           ) : (
-            <Paper sx={{ width: 400, p: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Paper 
+              elevation={3}
+              sx={{ 
+                width: 380, 
+                p: 3, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                border: '1px solid #e0e0e0',
+                borderRadius: 2,
+                bgcolor: 'white'
+              }}
+            >
               <Box sx={{ textAlign: 'center' }}>
-                <Person sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  MR görüntülerini görmek için bir bölge seçin
+                <Person sx={{ fontSize: 56, color: 'text.disabled', mb: 1.5 }} />
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  MR görüntülerini görmek için<br />bir bölge seçin
                 </Typography>
               </Box>
             </Paper>
           )}
         </Box>
       </Box>
+
+      {/* Image Viewer Modal */}
+      <Dialog
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogContent sx={{ p: 0, position: 'relative', bgcolor: 'black' }}>
+          <IconButton
+            onClick={() => setViewerOpen(false)}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              '&:hover': { bgcolor: 'white' },
+              zIndex: 1
+            }}
+          >
+            <Close />
+          </IconButton>
+          {selectedImage && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '70vh',
+                p: 4
+              }}
+            >
+              <img
+                src={selectedImage}
+                alt="MR Görüntüsü"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '80vh',
+                  objectFit: 'contain'
+                }}
+              />
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

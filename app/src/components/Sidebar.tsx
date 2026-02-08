@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Drawer,
   List,
   ListItem,
   ListItemButton,
@@ -38,18 +37,15 @@ const menuItems: MenuItem[] = [
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   return (
-    <Drawer
-      variant="permanent"
+    <Box
       sx={{
         width: 256,
         flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 256,
-          boxSizing: 'border-box',
-          background: 'linear-gradient(180deg, #0f4c75 0%, #1b6ca8 100%)',
-          color: 'white',
-          borderRight: 'none',
-        },
+        background: 'linear-gradient(180deg, #0f4c75 0%, #1b6ca8 100%)',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
       }}
     >
       <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -121,6 +117,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
           );
         })}
       </List>
-    </Drawer>
+    </Box>
   );
 };

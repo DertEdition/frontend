@@ -204,7 +204,7 @@ export function MedicationTracking() {
             Weekly Calendar
           </Typography>
 
-          <Box sx={{ display: 'flex', gap: 1.5, overflowX: 'auto', pb: 1 }}>
+          <Box sx={{ display: 'flex', gap: 2.5, overflowX: 'auto', pb: 1 }}>
             {DAYS.filter(day => day.key !== 'EVERYDAY').map((day) => {
               const dayMedicines = getMedicinesByDay(day.key);
               const isToday = getCurrentDay() === day.key;
