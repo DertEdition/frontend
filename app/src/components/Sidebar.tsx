@@ -13,7 +13,8 @@ import {
   Accessibility,
   Biotech,
   Medication,
-  Chat
+  Chat,
+  Person
 } from '@mui/icons-material';
 
 interface SidebarProps {
@@ -29,6 +30,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
+  { id: 'profile', label: 'Health Profile', icon: Person },
   { id: 'bodymap', label: 'Body Map', icon: Accessibility },
   { id: 'blood', label: 'Blood Tests', icon: Biotech },
   { id: 'medication', label: 'Medication Tracking', icon: Medication },

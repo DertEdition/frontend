@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Paper, IconButton, CircularProgress, Dialog, DialogContent, Radio } from '@mui/material';
 import { Close, Person, Image, Psychology, CloudUpload, PictureAsPdf, ZoomIn } from '@mui/icons-material';
-import { Header } from './Header';
 import { uploadMRIImage, getMRIImages } from '../rest/restOperations';
 
 type BodyPart = 'head' | 'chest' | 'abdomen' | 'left-arm' | 'right-arm' | 'left-leg' | 'right-leg';
@@ -72,7 +71,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
     'right-leg': []
   });
   const [uploading, setUploading] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageForAI, setSelectedImageForAI] = useState<string | null>(null);
@@ -84,8 +82,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
 
   const handleAIAnalysisClick = () => {
     if (selectedImageForAI) {
-      // AI analiz fonksiyonu buraya gelecek
-      console.log('AI analiz için seçilen görüntü:', selectedImageForAI);
       handleAIAnalysis(selectedImageForAI);
     }
   };
@@ -122,7 +118,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
   // Sayfa yüklendiğinde mevcut MR görüntülerini getir
   useEffect(() => {
     const fetchMRIImages = async () => {
-      setLoading(true);
       try {
         const images = await getMRIImages();
         // Backend'den gelen görüntüleri vücut bölgelerine göre grupla
@@ -148,8 +143,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
         setMriData(groupedImages);
       } catch (err) {
         console.error('Error fetching MRI images:', err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -173,7 +166,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
 
   return (
     <Box sx={{ flex: 1, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
-      <Header />
       
       <Box component="main" sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', gap: 3 }}>
@@ -379,7 +371,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: '440px', overflowY: 'auto', pr: 0.5 }}>
                     {mriData[selectedPart].map((img, index) => {
                       const isPDF = img.url.toLowerCase().endsWith('.pdf');
-                      const filename = img.url.split('/').pop() || `MR-${index + 1}`;
                       return (
                       <Paper 
                         key={index}

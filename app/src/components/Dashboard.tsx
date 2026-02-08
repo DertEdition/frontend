@@ -1,10 +1,8 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
-import { Header } from './Header';
 
 export function Dashboard() {
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'grey.50', minHeight: '100vh' }}>
-      <Header />
 
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>

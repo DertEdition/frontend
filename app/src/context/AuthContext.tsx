@@ -3,8 +3,7 @@ import React, { createContext, useContext, useState, useEffect, type ReactNode }
 interface UserInfo {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
+  username: string;
 }
 
 interface AuthContextType {
@@ -32,12 +31,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = (newToken: string, newUser: UserInfo) => {
-    console.log('AuthContext login called with token:', newToken);
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
-    console.log('Token stored in localStorage:', localStorage.getItem('token'));
   };
 
   const logout = () => {
