@@ -5,9 +5,8 @@ import { Dashboard } from './components/Dashboard';
 import { MedicationTracking } from './components/MedicationTracking'; import { BodyMap } from './components/BodyMap'; import { HealthProfile } from './components/HealthProfile'; import { Login } from './components/auth/Login';
 import { Register } from './components/auth/Register';
 import { useState } from "react";
-import { Typography } from '@mui/material';
-import { Header } from './components/Header';
 import { useAuth } from './context/AuthContext';
+import { BloodTest } from "./components/BloodTest";
 
 type ViewType = 'dashboard' | 'profile' | 'bodymap' | 'blood' | 'medication' | 'chat';
 
@@ -33,7 +32,7 @@ function App() {
       case 'bodymap':
         return <BodyMap onNavigateToChat={() => setActiveView('chat')} />;
       case 'blood':
-        return <Typography variant="h4">Kan Testleri - Yakında...</Typography>;
+        return <BloodTest/>
       case 'medication':
         return <MedicationTracking />;
       default:
@@ -47,9 +46,6 @@ function App() {
         <Sidebar activeView={activeView} onViewChange={(view) => setActiveView(view as ViewType)} />
 
         <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* 🔥 Header artık burada! Sayfa değişse bile Header asla silinmez, animasyon akmaya devam eder. */}
-          <Header />
-
           <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
             {renderView()}
           </Box>

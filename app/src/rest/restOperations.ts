@@ -9,7 +9,6 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor - her istekte token ekle
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -105,5 +104,40 @@ export const getHealthProfile = async (): Promise<HealthProfileResponse | null> 
     }
     throw error;
   }
+};
+
+// Blood Test API
+
+export interface BloodTestRecord {
+  id: number;
+  fileName: string;
+  fileUrl: string;
+  uploadDate: string;
+  status: string;
+  message: string;
+  anormallikler: string[];
+  rapor: string;
+  tablo_sayisi: number;
+}
+
+export const uploadBloodTest = async (file: File): Promise<BloodTestRecord> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient.post('/blood-test/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const getBloodTests = async (): Promise<BloodTestRecord[]> => {
+  const response = await apiClient.get('/blood-test');
+  return response.data;
+};
+
+export const deleteBloodTest = async (id: number): Promise<void> => {
+  await apiClient.delete(`/blood-test/${id}`);
 };
 
