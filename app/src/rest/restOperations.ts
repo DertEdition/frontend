@@ -9,6 +9,25 @@ const apiClient = axios.create({
   },
 });
 
+
+// Helper to attach a logout handler to the apiClient for token expiration
+export function attachAuthInterceptor(logout: () => void) {
+  apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        if (typeof logout === 'function') {
+          logout();
+        } else {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+}
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -139,5 +158,34 @@ export const getBloodTests = async (): Promise<BloodTestRecord[]> => {
 
 export const deleteBloodTest = async (id: number): Promise<void> => {
   await apiClient.delete(`/blood-test/${id}`);
+};
+export const deleteMRIImage = async (fileUrl: string): Promise<void> => {
+  await apiClient.delete('/mri/delete', {
+    params: { fileUrl }
+  });
+};
+
+
+// restOperations.ts dosyasına ekle
+
+export interface VisionAnalysisResponse {
+  request_id: string;
+  success: boolean;
+  diagnosis_type: string;
+  dermatology?: {
+    malignancy: string;
+    malignancy_confidence: number;
+    recommendations: string[];
+  };
+  explanation: string;
+  confidence: string;
+  warnings: string[];
+  disclaimer: string;
+}
+
+export const analyzeVisionImageUrl = async (imageUrl: string): Promise<VisionAnalysisResponse> => {
+  // FormData ile uğraşmıyoruz, düz bir JSON objesi gönderiyoruz
+  const response = await apiClient.post('/vision/analyze-url', { imageUrl });
+  return response.data;
 };
 

@@ -114,12 +114,6 @@ export function BloodTest() {
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#f5f5f5', minHeight: '100vh', p: 2, maxWidth: '100%', overflow: 'hidden' }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, color: '#1e293b' }}>
-          Blood Tests
-        </Typography>
-      </Box>
 
       {/* Top: Past Records + Upload Button */}
       <Card sx={{ borderRadius: 3, boxShadow: 1, mb: 3 }}>

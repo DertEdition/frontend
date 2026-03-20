@@ -6,14 +6,21 @@ import { MedicationTracking } from './components/MedicationTracking'; import { B
 import { Register } from './components/auth/Register';
 import { useState } from "react";
 import { useAuth } from './context/AuthContext';
+import { useEffect } from 'react';
+import { attachAuthInterceptor } from './rest/restOperations';
 import { BloodTest } from "./components/BloodTest";
 
 type ViewType = 'dashboard' | 'profile' | 'bodymap' | 'blood' | 'medication' | 'chat';
 
+
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [showRegister, setShowRegister] = useState(false);
+
+  useEffect(() => {
+    attachAuthInterceptor(logout);
+  }, [logout]);
 
   if (!isAuthenticated) {
     return showRegister
