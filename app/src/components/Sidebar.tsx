@@ -39,12 +39,12 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-  { id: 'profile', label: 'Health Profile', icon: Person },
-  { id: 'bodymap', label: 'Body Map', icon: Accessibility },
-  { id: 'blood', label: 'Blood Tests', icon: Biotech },
-  { id: 'medication', label: 'Medication Tracking', icon: Medication },
-  { id: 'chat', label: 'AI Health Chat', icon: Chat },
+  { id: 'dashboard', label: 'Gösterge Paneli', icon: DashboardIcon },
+  { id: 'profile', label: 'Sağlık Bilgilerim', icon: Person },
+  { id: 'bodymap', label: 'Vücut Haritası', icon: Accessibility },
+  { id: 'blood', label: 'Kan Testleri', icon: Biotech },
+  { id: 'medication', label: 'İlaç Takip', icon: Medication },
+  { id: 'chat', label: 'AI Sağlık Botu', icon: Chat },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Paper, IconButton, CircularProgress, Dialog, DialogContent, Radio } from '@mui/material';
-import { Close, Person, Image, Psychology, CloudUpload, PictureAsPdf, ZoomIn, SmartToy } from '@mui/icons-material';
+import { Close, Person, Image, Psychology, CloudUpload, PictureAsPdf, ZoomIn, SmartToy, Architecture, Face } from '@mui/icons-material';
 import { uploadMRIImage, getMRIImages, type VisionAnalysisResponse, analyzeVisionImageUrl, deleteMRIImage } from '../rest/restOperations';
+import ReactMarkdown from 'react-markdown';
 
 type BodyPart = 'head' | 'chest' | 'abdomen' | 'left-arm' | 'right-arm' | 'left-leg' | 'right-leg';
 
@@ -79,6 +80,7 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<VisionAnalysisResponse | null>(null);
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
+  const [analysisType, setAnalysisType] = useState<'XRAY' | 'DERMATOLOGY'>('XRAY');
 
   // Silme butonuna basınca sadece onay penceresini açar
   const askDeleteConfirmation = (fileUrl: string) => {
@@ -112,9 +114,8 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
   const handleAIAnalysis = async (imageUrl: string) => {
     setAnalysisLoading(true);
     try {
-      // Sadece URL'i gönderiyoruz, gerisini backend hallediyor!
-      const result = await analyzeVisionImageUrl(imageUrl);
-
+      // Seçilen tipi (XRAY veya DERMATOLOGY) backend'e gönderiyoruz
+      const result = await analyzeVisionImageUrl(imageUrl, analysisType);
       setAnalysisResult(result);
       setResultDialogOpen(true);
     } catch (err) {
@@ -208,7 +209,7 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', p: 2 }}> 
+    <Box sx={{ flexGrow: 1, minHeight: '100vh', p: 2 }}>
 
       <Box component="main">
         <Box sx={{ display: 'flex', gap: 3 }}>
@@ -553,16 +554,54 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
                 )}
               </Box>
 
-              {/* Mevcut AI Analiz Butonunu Güncelle */}
+              {/* --- SEÇİM BUTONLARI --- */}
+              <Box sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setAnalysisType('XRAY')}
+                  startIcon={<Architecture />}
+                  sx={{
+                    py: 1,
+                    textTransform: 'none',
+                    borderRadius: 1,
+                    borderColor: analysisType === 'XRAY' ? '#3b82f6' : '#e0e0e0',
+                    bgcolor: analysisType === 'XRAY' ? '#eff6ff' : 'transparent',
+                    color: analysisType === 'XRAY' ? '#1d4ed8' : '#666',
+                    '&:hover': { bgcolor: analysisType === 'XRAY' ? '#eff6ff' : 'transparent', borderColor: analysisType === 'XRAY' ? '#3b82f6' : '#e0e0e0' }
+                  }}
+                >
+                  Radyoloji
+                </Button>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setAnalysisType('DERMATOLOGY')}
+                  startIcon={<Face />}
+                  sx={{
+                    py: 1,
+                    textTransform: 'none',
+                    borderRadius: 1,
+                    borderColor: analysisType === 'DERMATOLOGY' ? '#3b82f6' : '#e0e0e0',
+                    bgcolor: analysisType === 'DERMATOLOGY' ? '#eff6ff' : 'transparent',
+                    color: analysisType === 'DERMATOLOGY' ? '#1d4ed8' : '#666',
+                    '&:hover': { bgcolor: analysisType === 'DERMATOLOGY' ? '#eff6ff' : 'transparent', borderColor: analysisType === 'DERMATOLOGY' ? '#3b82f6' : '#e0e0e0' }
+                  }}
+                >
+                  Dermatoloji
+                </Button>
+              </Box>
+
+              {/* --- ANA ANALİZ BUTONU (SABİT) --- */}
               <Button
                 fullWidth
                 variant="contained"
-                startIcon={analysisLoading ? <CircularProgress size={18} color="inherit" /> : <SmartToy sx={{ fontSize: 28 }} />}
+                startIcon={analysisLoading ? <CircularProgress size={18} color="inherit" /> : <SmartToy />}
                 onClick={() => selectedImageForAI && handleAIAnalysis(selectedImageForAI)}
                 disabled={!selectedImageForAI || analysisLoading}
                 sx={{
                   bgcolor: '#3b82f6',
-                  '&:hover': { bgcolor: '#2563eb' },
+                  '&:hover': { bgcolor: '#3b82f6' },
                   mb: 1.5,
                   textTransform: 'none',
                   py: 1.2,
@@ -578,40 +617,86 @@ export const BodyMap: React.FC<BodyMapProps> = ({ onNavigateToChat }) => {
                 onClose={() => setResultDialogOpen(false)}
                 maxWidth="sm"
                 fullWidth
+                PaperProps={{ sx: { borderRadius: 2 } }}
               >
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1e293b' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 500, color: '#1e293b' }}>
                       Analiz Sonucu
                     </Typography>
-                    <IconButton onClick={() => setResultDialogOpen(false)}><Close /></IconButton>
+                    <IconButton onClick={() => setResultDialogOpen(false)}>
+                      <Close />
+                    </IconButton>
                   </Box>
 
                   {analysisResult && (
                     <Box>
-                      <Paper sx={{ p: 2, bgcolor: '#f8fafc', mb: 2, borderLeft: '5px solid #3b82f6' }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#3b82f6' }}>
-                          Teşhis Güveni: {analysisResult.confidence}
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2.5,
+                          bgcolor: '#f8fafc',
+                          mb: 2,
+                          borderLeft: '6px solid #3b82f6',
+                          borderRadius: '4px 12px 12px 4px'
+                        }}
+                      >
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#3b82f6', mb: 1.5, fontSize: '1.1rem' }}>
+                          Teşhis Güveni: %{analysisResult.confidence}
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-line' }}>
-                          {analysisResult.explanation}
+
+                        <Typography
+                          variant="body1" // Font boyutu bir tık arttırıldı
+                          sx={{
+                            mt: 1,
+                            whiteSpace: 'pre-line',
+                            color: '#334155',
+                            lineHeight: 1.6, // Satır arası boşluk ferahlatıldı
+                            fontSize: '1rem'
+                          }}
+                        >
+                          {/* Regex ile ### ve ** gibi karakterleri uçuruyoruz */}
+                          {analysisResult.explanation.replace(/[#*]/g, '').trim()}
                         </Typography>
                       </Paper>
 
                       {analysisResult.warnings && analysisResult.warnings.length > 0 && (
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" color="error" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        <Box sx={{ mb: 2, px: 1 }}>
+                          <Typography variant="subtitle1" color="error" sx={{ fontWeight: 600, mb: 1, fontSize: '0.95rem' }}>
                             Uyarılar:
                           </Typography>
                           {analysisResult.warnings.map((w, i) => (
-                            <Typography key={i} variant="caption" display="block" sx={{ color: '#ef4444', bgcolor: '#fef2f2', p: 0.5, mb: 0.5, borderRadius: 1 }}>
-                              {w}
+                            <Typography
+                              key={i}
+                              variant="body2"
+                              display="block"
+                              sx={{
+                                color: '#ef4444',
+                                bgcolor: '#fef2f2',
+                                p: 1,
+                                mb: 0.5,
+                                borderRadius: 1,
+                                border: '1px solid #fee2e2'
+                              }}
+                            >
+                              • {w}
                             </Typography>
                           ))}
                         </Box>
                       )}
 
-                      <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', display: 'block', mt: 2 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          fontStyle: 'italic',
+                          display: 'block',
+                          mt: 3,
+                          textAlign: 'center',
+                          fontSize: '0.75rem',
+                          px: 2
+                        }}
+                      >
                         {analysisResult.disclaimer}
                       </Typography>
                     </Box>

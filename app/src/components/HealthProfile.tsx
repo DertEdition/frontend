@@ -24,7 +24,7 @@ interface HealthData {
   height: string;
   waist: string;
   age: string;
-  gender: 'male' | 'female' | '';
+  gender: 'MALE' | 'FEMALE' | '';
 }
 
 export const HealthProfile: React.FC = () => {
@@ -52,14 +52,14 @@ export const HealthProfile: React.FC = () => {
       setLoading(true);
       setError(null);
       const profile = await getHealthProfile();
-      
+
       if (profile) {
         setHealthData({
           weight: profile.weight.toString(),
           height: profile.height.toString(),
           waist: profile.waist.toString(),
           age: profile.age.toString(),
-          gender: profile.gender.toLowerCase() as 'male' | 'female',
+          gender: profile.gender.toLowerCase() as 'MALE' | 'FEMALE',
         });
         setBmi(profile.bmi);
         setBodyFatPercentage(profile.bodyFatPercentage);
@@ -87,7 +87,7 @@ export const HealthProfile: React.FC = () => {
   };
 
   const getBodyFatCategory = (bodyFat: number, gender: string) => {
-    if (gender === 'male') {
+    if (gender === 'MALE') {
       if (bodyFat < 6) return { text: 'Çok Düşük', color: '#fbbf24' };
       if (bodyFat < 14) return { text: 'Atletik', color: '#10b981' };
       if (bodyFat < 18) return { text: 'Fitness', color: '#10b981' };
@@ -118,15 +118,15 @@ export const HealthProfile: React.FC = () => {
         height: parseFloat(healthData.height),
         waist: parseFloat(healthData.waist),
         age: parseInt(healthData.age),
-        gender: healthData.gender.toUpperCase() as 'male' | 'female',
+        gender: healthData.gender.toUpperCase() as 'MALE' | 'FEMALE',
       };
 
       const response = await saveHealthProfile(profileData);
-      
+
       setBmi(response.bmi);
       setBodyFatPercentage(response.bodyFatPercentage);
       setSuccess('Bilgileriniz başarıyla kaydedildi!');
-      
+
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message || 'Bilgiler kaydedilirken bir hata oluştu');
@@ -145,17 +145,16 @@ export const HealthProfile: React.FC = () => {
 
   return (
     <Box sx={{ flex: 1, bgcolor: '#f5f5f5', minHeight: '100vh', p: 2 }}>
-      
+
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
         {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
         {success && <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>{success}</Alert>}
 
-        {/* Üst Kısım - Kişisel Bilgiler Formu (Orijinal Boyutlarda) */}
         <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 3, border: '1px solid #e5e7eb' }}>
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5, color: '#1f2937', fontSize: '1.05rem' }}>
             📊 Sağlık Profili Ölçümlerim
           </Typography>
-          
+
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, mb: 2 }}>
             <TextField
               fullWidth label="Kilo (kg)" type="number" value={healthData.weight} onChange={handleInputChange('weight')}
@@ -176,10 +175,19 @@ export const HealthProfile: React.FC = () => {
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 200px', gap: 2, alignItems: 'end' }}>
             <TextField fullWidth label="Yaş" type="number" value={healthData.age} onChange={handleInputChange('age')} size="small" />
-            <TextField select fullWidth label="Cinsiyet" value={healthData.gender} onChange={handleInputChange('gender')} size="small" SelectProps={{ native: true }}>
-              <option value="">Seçiniz</option>
-              <option value="male">Erkek</option>
-              <option value="female">Kadın</option>
+            <TextField
+              select
+              fullWidth
+              label="Cinsiyet"
+              value={healthData.gender}
+              onChange={handleInputChange('gender')}
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              SelectProps={{ native: true }}
+            >
+              <option value="" disabled>Seçiniz</option>
+              <option value="MALE">Erkek</option>
+              <option value="FEMALE">Kadın</option>
             </TextField>
 
             <Button
@@ -192,9 +200,8 @@ export const HealthProfile: React.FC = () => {
           </Box>
         </Paper>
 
-        {/* Alt Kısım - Sonuçlar (Kartlar ve Barlar Hafif Büyütüldü) */}
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
-          
+
           {/* BMI Card */}
           <Paper elevation={2} sx={{ p: 4, borderRadius: 3, border: '1px solid #e5e7eb' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
@@ -209,7 +216,7 @@ export const HealthProfile: React.FC = () => {
                   <Typography variant="body1" sx={{ color: '#6b7280', fontWeight: 500 }}>{getBMICategory(bmi).text}</Typography>
                 </Box>
                 <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 3 }}>
-                   Boy: {healthData.height}cm | Kilo: {healthData.weight}kg
+                  Boy: {healthData.height}cm | Kilo: {healthData.weight}kg
                 </Typography>
 
                 <Box sx={{ mt: 1 }}>
@@ -247,7 +254,7 @@ export const HealthProfile: React.FC = () => {
                   <Typography variant="body1" sx={{ color: '#6b7280', fontWeight: 500 }}>{getBodyFatCategory(bodyFatPercentage, healthData.gender).text}</Typography>
                 </Box>
                 <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', mb: 3 }}>
-                  {healthData.gender === 'male' ? 'Erkek' : 'Kadın'} | Yaş: {healthData.age}
+                  {healthData.gender === 'MALE' ? 'Erkek' : 'Kadın'} | Yaş: {healthData.age}
                 </Typography>
 
                 <Box sx={{ mt: 1 }}>
@@ -257,7 +264,7 @@ export const HealthProfile: React.FC = () => {
                   </Box>
                   <Box sx={{ position: 'relative', height: 12, bgcolor: '#f3f4f6', borderRadius: 2, overflow: 'hidden', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)' }}>
                     <Box sx={{ position: 'absolute', inset: 0, display: 'flex' }}>
-                      {healthData.gender === 'male' ? (
+                      {healthData.gender === 'MALE' ? (
                         <>
                           <Box sx={{ width: '28%', bgcolor: '#86efac' }} />
                           <Box sx={{ width: '8%', bgcolor: '#a7f3d0' }} />

@@ -71,7 +71,7 @@ export function Dashboard() {
   };
 
   const getBodyFatCategory = (bodyFat: number, gender: string) => {
-    if (gender === 'male') {
+    if (gender === 'MALE') {
       if (bodyFat < 6) return { text: 'Çok Düşük', color: '#fbbf24' };
       if (bodyFat < 14) return { text: 'Atletik', color: '#10b981' };
       if (bodyFat < 18) return { text: 'Fitness', color: '#10b981' };
@@ -91,7 +91,7 @@ export function Dashboard() {
   return (
     <Box sx={{ flexGrow: 1, bgcolor: '#f5f5f5', minHeight: '100vh', p: 3 }}>
       <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>
-        Dashboard
+        Gösterge Paneli
       </Typography>
 
       {loading ? (
@@ -177,7 +177,7 @@ export function Dashboard() {
                     </Typography>
                   </Box>
                   <Typography variant="caption" sx={{ color: '#9ca3af', mb: 1.5, display: 'block' }}>
-                    {healthProfile.gender === 'male' ? 'Erkek' : 'Kadın'} | Yaş: {healthProfile.age}
+                    {healthProfile.gender === 'MALE' ? 'Erkek' : 'Kadın'} | Yaş: {healthProfile.age}
                   </Typography>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -186,7 +186,7 @@ export function Dashboard() {
                     </Box>
                     <Box sx={{ position: 'relative', height: 8, bgcolor: '#f3f4f6', borderRadius: 2, overflow: 'hidden', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)' }}>
                       <Box sx={{ position: 'absolute', inset: 0, display: 'flex' }}>
-                        {healthProfile.gender === 'male' ? (
+                        {healthProfile.gender === 'MALE' ? (
                           <>
                             <Box sx={{ width: '28%', bgcolor: '#86efac' }} />
                             <Box sx={{ width: '8%', bgcolor: '#a7f3d0' }} />
@@ -206,7 +206,7 @@ export function Dashboard() {
                       <Box sx={{ position: 'absolute', top: -2, bottom: -2, width: 3, bgcolor: '#1f2937', left: `${Math.min((healthProfile.bodyFatPercentage / 50) * 100, 100)}%`, borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.3)', transition: 'left 0.5s ease-in-out' }} />
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.25 }}>
-                      {healthProfile.gender === 'male' ? (
+                      {healthProfile.gender === 'MALE' ? (
                         <>
                           <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 500, fontSize: '0.6rem' }}>14%</Typography>
                           <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 500, fontSize: '0.6rem' }}>18%</Typography>
@@ -262,7 +262,7 @@ export function Dashboard() {
                   ))}
                   <Box sx={{ gridColumn: 'span 2', p: 1, bgcolor: '#f5f3ff', borderRadius: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" sx={{ color: '#7c3aed', fontWeight: 600 }}>
-                      {healthProfile.gender === 'male' ? '♂ Erkek' : '♀ Kadın'}
+                      {healthProfile.gender === 'MALE' ? '♂ Erkek' : '♀ Kadın'}
                     </Typography>
                   </Box>
                 </Box>

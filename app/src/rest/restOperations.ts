@@ -93,7 +93,7 @@ export interface HealthProfileData {
   height: number;
   waist: number;
   age: number;
-  gender: 'male' | 'female';
+  gender: 'MALE' | 'FEMALE';
 }
 
 export interface HealthProfileResponse {
@@ -102,7 +102,7 @@ export interface HealthProfileResponse {
   height: number;
   waist: number;
   age: number;
-  gender: 'male' | 'female';
+  gender: 'MALE' | 'FEMALE';
   bmi: number;
   bodyFatPercentage: number;
   lastUpdated?: string;
@@ -183,9 +183,11 @@ export interface VisionAnalysisResponse {
   disclaimer: string;
 }
 
-export const analyzeVisionImageUrl = async (imageUrl: string): Promise<VisionAnalysisResponse> => {
-  // FormData ile uğraşmıyoruz, düz bir JSON objesi gönderiyoruz
-  const response = await apiClient.post('/vision/analyze-url', { imageUrl });
+export const analyzeVisionImageUrl = async (imageUrl: string, analysisType: string): Promise<VisionAnalysisResponse> => {
+  const response = await apiClient.post('/vision/analyze-url', { 
+    imageUrl, 
+    type: analysisType 
+  });
   return response.data;
 };
 

@@ -119,9 +119,9 @@ export function BloodTest() {
       <Card sx={{ borderRadius: 3, boxShadow: 1, mb: 3 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="body2" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.75rem' }}>
+            <Typography variant="body2" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', textTransform: 'none', letterSpacing: 0.5, fontSize: '0.75rem' }}>
               <Description sx={{ fontSize: 16 }} />
-              Past Records
+              Geçmiş Kayıtlar
             </Typography>
             <Box
               onClick={() => !uploading && fileInputRef.current?.click()}
@@ -145,7 +145,7 @@ export function BloodTest() {
                 <CloudUpload sx={{ fontSize: 18 }} />
               )}
               <Typography variant="body2" fontWeight={600} sx={{ color: 'white' }}>
-                {uploading ? 'Analyzing...' : 'Upload'}
+                {uploading ? 'Analiz ediliyor...' : 'Yükle'}
               </Typography>
             </Box>
             <input
@@ -160,7 +160,7 @@ export function BloodTest() {
           {loading && <LinearProgress sx={{ mb: 2 }} />}
 
           {records.length === 0 && !loading ? (
-            <Alert severity="info">No blood test records yet. Upload your first one!</Alert>
+            <Alert severity="info">Henüz kan tahlili kaydı yok. İlk kaydınızı yükleyin!</Alert>
           ) : (
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
               {records.map((record) => {
@@ -245,9 +245,9 @@ export function BloodTest() {
               <Box sx={{ width: 56, height: 56, borderRadius: '50%', bgcolor: '#f0f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <SmartToy sx={{ fontSize: 28, color: '#1b6ca8' }} />
               </Box>
-              <Typography variant="body2" color="text.secondary" textAlign="center">
-                Upload a blood test or select a record to see AI analysis
-              </Typography>
+                <Typography variant="body2" color="text.secondary" textAlign="center">
+                  Kan tahlili yükleyin veya bir kaydı seçin, yapay zeka analizini görün
+                </Typography>
             </Box>
           </CardContent>
         </Card>
@@ -265,7 +265,7 @@ export function BloodTest() {
                   {formatDate(selectedRecord.uploadDate)}
                 </Typography>
               </Box>
-              <Chip label="Analyzed" size="small" sx={{ bgcolor: '#d1fae5', color: '#065f46', fontWeight: 600 }} />
+              <Chip label="Analiz Edildi" size="small" sx={{ bgcolor: '#d1fae5', color: '#065f46', fontWeight: 600 }} />
             </Box>
 
             {/* Anormallikler + Rapor side by side */}
@@ -322,7 +322,7 @@ export function BloodTest() {
                       <SmartToy sx={{ fontSize: 18, color: 'white' }} />
                     </Box>
                     <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#0f4c75' }}>
-                      AI Health Assistant
+                      Yapay Zeka Sağlık Asistanı
                     </Typography>
                   </Box>
                   <Box sx={{ bgcolor: '#f8fafb', border: '1px solid #e5e7eb', borderRadius: 3, p: 2.5 }}>
