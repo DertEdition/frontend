@@ -63,9 +63,9 @@ interface AnalysisResponse {
     strength: string;
     manufacturer: string;
   } | null;
-  explanation: string;
+  explanation: string | null;
   confidence: string;
-  warnings: string[];
+  warnings: string[] | null;
   disclaimer: string;
   processing_time_ms: number;
   errors?: string[] | null;
@@ -82,7 +82,7 @@ const DAYS: { key: DayOfWeek; label: string }[] = [
 ];
 
 const API_BASE_URL = 'http://localhost:8080/api/medicine';
-const ANALYZE_URL = 'http://localhost:8000/analyze/upload';
+const ANALYZE_URL = 'http://localhost:8082/analyze/upload';
 
 export function MedicationTracking() {
   const { token } = useAuth();
@@ -401,27 +401,39 @@ export function MedicationTracking() {
                 <Typography variant="subtitle2" sx={{ color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, fontSize: '0.7rem', mb: 1, ls: 1 }}>
                   Klinik Değerlendirme
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.7, fontSize: '1rem' }}>
-                  {analysisResult.explanation.replace(/[#*]/g, '').trim()}
+                <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.7, fontSize: '1rem', whiteSpace: 'pre-line' }}>
+                  {(analysisResult.explanation || 'Açıklama mevcut değil.').replace(/[#*]/g, '').trim()}
                 </Typography>
               </Box>
 
               {/* Etkin Maddeler */}
-              <Box>
-                <Typography variant="subtitle2" sx={{ color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, fontSize: '0.7rem', mb: 1 }}>
-                  Etkin Maddeler
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {analysisResult.drug.active_ingredients.map((ing, i) => (
-                    <Typography key={i} variant="caption" sx={{ bgcolor: '#f1f5f9', px: 1.5, py: 0.5, borderRadius: 5, color: '#475569' }}>
-                      {ing}
+              {(() => {
+                let ingredients = analysisResult.drug.active_ingredients || [];
+                // If structured list is empty, try to parse from explanation
+                if (ingredients.length === 0 && analysisResult.explanation) {
+                  const match = analysisResult.explanation.match(/Etkin Madde(?:si|ler[i]?)[\s:]+([^\n]+)/i);
+                  if (match) {
+                    ingredients = match[1].split(/[,;]/).map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+                  }
+                }
+                return ingredients.length > 0 ? (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, fontSize: '0.7rem', mb: 1 }}>
+                      Etkin Maddeler
                     </Typography>
-                  ))}
-                </Box>
-              </Box>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {ingredients.map((ing: string, i: number) => (
+                        <Typography key={i} variant="caption" sx={{ bgcolor: '#f1f5f9', px: 1.5, py: 0.5, borderRadius: 5, color: '#475569' }}>
+                          {ing}
+                        </Typography>
+                      ))}
+                    </Box>
+                  </Box>
+                ) : null;
+              })()}
 
               {/* Uyarılar (Varsa) */}
-              {analysisResult.warnings.length > 0 && (
+              {analysisResult.warnings && analysisResult.warnings.length > 0 && (
                 <Box sx={{ p: 2, bgcolor: '#fff1f2', borderRadius: 2, borderLeft: '4px solid #ef4444' }}>
                   <Typography variant="subtitle2" sx={{ color: '#991b1b', fontWeight: 700, mb: 1 }}>
                     Önemli Uyarılar
