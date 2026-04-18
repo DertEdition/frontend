@@ -10,7 +10,7 @@ import {
   CircularProgress,
   InputAdornment,
 } from '@mui/material';
-import { Email, Lock, Favorite } from '@mui/icons-material';
+import { Email, Lock } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
 const API_BASE_URL = 'http://localhost:8080/api/auth';
@@ -71,36 +71,19 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
       }}
     >
       <Box sx={{ width: '100%', maxWidth: 400 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Box sx={{ textAlign: 'center', mb: 2 }}>
+          {/* İkon kutusu yerine gelen yeni logo bileşeni */}
           <Box
+            component="img"
+            src="/logo.png" // Not: public klasöründeyse genellikle direkt "/logo.png" olarak erişilir
+            alt="Çare Logo"
             sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 64,
-              height: 64,
-              bgcolor: 'white',
-              borderRadius: 4,
-              mb: 2,
+              height: 100, // Login sayfasında biraz daha belirgin olması için 100 yaptım, istersen 80'e çekebilirsin
+              width: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.3))',
             }}
-          >
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                border: '3px solid #3b82f6',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Favorite sx={{ width: 24, height: 24, color: '#3b82f6' }} />
-            </Box>
-          </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: 'white', mb: 1 }}>
-            Hoş Geldiniz
-          </Typography>
+          />
         </Box>
 
         <Card sx={{ borderRadius: 4, boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
@@ -115,7 +98,7 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
               <Box sx={{ mb: 3 }}>
                 <Typography
                   component="label"
-                  sx={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'text.primary', mb: 1 }}
+                  sx={{ display: 'block', fontSize: 14, fontWeight: 500, mb: 1 }}
                 >
                   E-posta
                 </Typography>
@@ -137,13 +120,6 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
-                      '&:hover fieldset': {
-                        borderColor: '#3b82f6',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#3b82f6',
-                        borderWidth: 2,
-                      },
                     },
                   }}
                 />
@@ -152,7 +128,7 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
               <Box sx={{ mb: 3 }}>
                 <Typography
                   component="label"
-                  sx={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'text.primary', mb: 1 }}
+                  sx={{ display: 'block', fontSize: 14, fontWeight: 500, mb: 1 }}
                 >
                   Şifre
                 </Typography>
@@ -174,13 +150,6 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
-                      '&:hover fieldset': {
-                        borderColor: '#3b82f6',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#3b82f6',
-                        borderWidth: 2,
-                      },
                     },
                   }}
                 />
@@ -223,7 +192,7 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                   '&:hover': { color: '#2563eb' },
                 }}
               >
-                Kayıt Ol
+                Kayııt Ol
               </Typography>
             </Box>
           </CardContent>

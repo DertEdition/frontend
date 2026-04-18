@@ -77,32 +77,6 @@ export const Register: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchTo
     >
       <Box sx={{ width: '100%', maxWidth: 500 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 64,
-              height: 64,
-              bgcolor: 'white',
-              borderRadius: 4,
-              mb: 2,
-            }}
-          >
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                border: '3px solid #3b82f6',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Favorite sx={{ width: 24, height: 24, color: '#3b82f6' }} />
-            </Box>
-          </Box>
           <Typography variant="h4" sx={{ fontWeight: 700, color: 'white', mb: 1 }}>
             Hesap Oluştur
           </Typography>

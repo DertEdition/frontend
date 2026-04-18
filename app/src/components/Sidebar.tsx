@@ -26,6 +26,8 @@ import {
   Logout,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+// Logonun projenizdeki yolunu buraya ekleyin
+import logo from '../../public/logo.png'; 
 
 interface SidebarProps {
   activeView: string;
@@ -63,44 +65,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
         height: '100%',
       }}
     >
-      <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              bgcolor: 'rgba(255,255,255,0.2)',
-              borderRadius: 1.5,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Box
-              sx={{
-                width: 24,
-                height: 24,
-                border: '2px solid white',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  bgcolor: 'white',
-                  borderRadius: '50%',
-                }}
-              />
-            </Box>
-          </Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            ÇARE
-          </Typography>
-        </Box>
+      {/* Logo Alanı */}
+      <Box 
+        sx={{ 
+          p: 1, 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.1)' 
+        }}
+      >
+        <Box
+          component="img"
+          src="../../public/logo.png"
+          alt="Çare Logo"
+          sx={{
+            height: 80,
+            width: 'auto',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.2))'
+          }}
+        />
       </Box>
 
       {/* User Profile */}
@@ -129,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="body2" sx={{ fontWeight: 600, color: 'white', lineHeight: 1.3, fontSize: '0.8rem' }} noWrap>
-            {user?.username || 'User'}
+            {user?.username || 'Kullanıcı'}
           </Typography>
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.2, fontSize: '0.68rem' }} noWrap>
             {user?.email}
@@ -144,6 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) =>
         </IconButton>
       </Box>
 
+      {/* Menu List */}
       <List sx={{ flex: 1, p: 2 }}>
         {menuItems.map((item) => {
           const Icon = item.icon;
